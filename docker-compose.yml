@@ -2,6 +2,7 @@ version: "2.4"
 services:
   repository-proxy:
     build: .
+    image: burevol/repository_proxy
     environment:
       - REPOSITORY_ADDR=$REPO
       - JENKINS_ID=$ID
@@ -11,3 +12,4 @@ services:
       - JENKINS_PROTOCOL=$PROTOCOL
     ports:
       - "1542:1542"
+    container_name: repository_proxy
