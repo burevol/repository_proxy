@@ -1,0 +1,13 @@
+version: "3.9" 
+services:
+  repository-proxy:
+    build: .
+    environment:
+      - REPOSITORY_ADDR=$REPO
+      - JENKINS_ID=$ID
+      - JENKINS_TOKEN=$TOKEN
+      - JENKINS_ADDR=$ADDR
+      - JENKINS_JOB=$JOB 
+      - JENKINS_PROTOCOL=$PROTOCOL
+    ports:
+      - "1542:1542"
