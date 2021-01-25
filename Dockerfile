@@ -1,4 +1,4 @@
-FROM python:3
+FROM python:latest
 
 WORKDIR /usr/src/app
 
@@ -16,11 +16,10 @@ ENV JENKINS_ADDR ${JENKINS_ADDR}
 ENV JENKINS_JOB ${JENKINS_JOB}
 ENV JENKINS_PROTOCOL ${JENKINS_PROTOCOL}
 
-#RUN apt-get update && apt-get upgrade && apt-get install -y git
-#RUN git clone https://github.com/jrmdev/mitm_relay.git
+RUN pip install --upgrade pip
 RUN pip install requests python-jenkins
 
-COPY *.py .
+ADD *.py /usr/src/app/
 
 EXPOSE 1542
 
