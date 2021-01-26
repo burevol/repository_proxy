@@ -23,4 +23,4 @@ ADD *.py /usr/src/app/
 
 EXPOSE 1542
 
-CMD python3 ./mitm_relay.py -r 1542:${REPOSITORY_ADDR}:1542 -s request_check.py
+CMD python3 -u ./mitm_relay.py -r 1542:${REPOSITORY_ADDR}:1542 -s request_check.py
