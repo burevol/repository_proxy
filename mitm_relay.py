@@ -335,29 +335,29 @@ def do_relay_udp(relay_sock, server, cfg):
 
 def proxify(message, cfg, client_peer, server_peer, to_server=True):
 
-	def get_response():
-		try:
-			return requests.post('http://%s:%d/%s/%s/%d' %
-				(BIND_WEBSERVER[0], BIND_WEBSERVER[1],
-				('CLIENT_REQUEST/to' if to_server else 'SERVER_RESPONSE/from'),
-				server_peer[0], server_peer[1]),
-				proxies={'http': cfg.proxy},
-				headers=headers,
-				data=message).content
+	# def get_response():
+	# 	try:
+	# 		return requests.post('http://%s:%d/%s/%s/%d' %
+	# 			(BIND_WEBSERVER[0], BIND_WEBSERVER[1],
+	# 			('CLIENT_REQUEST/to' if to_server else 'SERVER_RESPONSE/from'),
+	# 			server_peer[0], server_peer[1]),
+	# 			proxies={'http': cfg.proxy},
+	# 			headers=headers,
+	# 			data=message).content
 
-		except requests.exceptions.ProxyError:
-			print(color("[!] error: can't connect to proxy!", 1, 31))
-			return message
-	"""
-	Modify traffic here
-	Send to our own parser functions, to the proxy, or both.
-	"""
+	# 	except requests.exceptions.ProxyError:
+	# 		print(color("[!] error: can't connect to proxy!", 1, 31))
+	# 		return message
+	# """
+	# Modify traffic here
+	# Send to our own parser functions, to the proxy, or both.
+	# """
 
-	server_str = color('%s:%d' % server_peer, 1, 34)
-	client_str = color('%s:%d' % client_peer, 1, 36)
-	date_str = color(time.strftime("%a %d %b %H:%M:%S", time.gmtime()), 1, 35)
-	modified_str = color('(modified!)', 1, 32)
-	modified = False
+	# server_str = color('%s:%d' % server_peer, 1, 34)
+	# client_str = color('%s:%d' % client_peer, 1, 36)
+	# date_str = color(time.strftime("%a %d %b %H:%M:%S", time.gmtime()), 1, 35)
+	# modified_str = color('(modified!)', 1, 32)
+	# modified = False
 
 	if cfg.script:
 		new_message = message
@@ -373,19 +373,19 @@ def proxify(message, cfg, client_peer, server_peer, to_server=True):
 			new_message = message
 
 		if new_message != message:
-			modified = True
+			# modified = True
 			message = new_message
 
-	if cfg.proxy:
-		headers = {u'User-Agent': None, u'Accept': None, u'Accept-Encoding': None, u'Connection': None}
-		headers['X-Mitm_Relay-To'] = '%s:%d' % (server_peer if to_server else client_peer)
-		headers['X-Mitm_Relay-From'] = '%s:%d' % (client_peer if to_server else server_peer)
+	# if cfg.proxy:
+	# 	headers = {u'User-Agent': None, u'Accept': None, u'Accept-Encoding': None, u'Connection': None}
+	# 	headers['X-Mitm_Relay-To'] = '%s:%d' % (server_peer if to_server else client_peer)
+	# 	headers['X-Mitm_Relay-From'] = '%s:%d' % (client_peer if to_server else server_peer)
 
-		new_message = get_response()
+	# 	new_message = get_response()
 
-		if new_message != message:
-			modified = True
-			message = new_message
+	# 	if new_message != message:
+	# 		modified = True
+	# 		message = new_message
 
 	# if to_server:
 	# 	msg_str = color(data_repr(message), 0, 93)
