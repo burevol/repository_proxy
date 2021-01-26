@@ -2,7 +2,7 @@ version: "2.2"
 services:
   repository-proxy:
     build: .
-    image: burevol/repository_proxy
+    image: burevol/repository_proxy:latest
     environment:
       - REPOSITORY_ADDR=$REPO
       - JENKINS_ID=$ID
