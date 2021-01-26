@@ -23,9 +23,10 @@ PROTOCOL=        #Протокол подключения к серверу Jenk
 ```
 * создать файл docker-compose.yml с содержимым:
 ```
-version: "2.4" 
+version: "2.2" 
 services:
   repository-proxy:
+    build: .
     image: burevol/repository_proxy:latest
     environment:
       - REPOSITORY_ADDR=$REPO
