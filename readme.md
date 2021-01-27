@@ -49,6 +49,9 @@ services:
 ```
 docker-compose up -d
 ```
+Примечания
+-------------
+Задача Jenkins получает имя хранилища в параметре extension_name
 
 
 
