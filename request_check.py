@@ -1,7 +1,6 @@
 import os
 import re
 import jenkins
-import json
 
 need_start_job = False
 repo_name = ""
@@ -16,7 +15,7 @@ JENKINS_PROTOCOL = os.environ['JENKINS_PROTOCOL']
 def handle_request(client_request):
     global need_start_job
     global repo_name
-    if re.search(b'DevDepot_commitObjects', client_request):
+    if client_request.find(b'DevDepot_commitObjects') != -1:
         need_start_job = True
         alias = re_alias.findall(client_request)
         if (len(alias)>0):
@@ -30,7 +29,7 @@ def handle_response(server_response):
     global repo_name
 
     if need_start_job:
-        if re.search(b'HTTP/1.1 200 OK', server_response):
+        if server_response.find(b'HTTP/1.1 200 OK') != -1:
             need_start_job = False
             print("Sync repository %s"%repo_name)
             JENKINS_URL = '%s://%s:%s@%s' % (JENKINS_PROTOCOL, JENKINS_ID, JENKINS_TOKEN, JENKINS_ADDR)
