@@ -40,6 +40,7 @@ services:
       - JENKINS_ADDR=$ADDR
       - JENKINS_JOB=$JOB 
       - JENKINS_PROTOCOL=$PROTOCOL
+    restart: unless-stopped
     ports:
       - "1542:1542"
     container_name: repository_proxy
