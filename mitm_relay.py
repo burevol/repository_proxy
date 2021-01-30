@@ -294,7 +294,7 @@ def do_relay_tcp(client_sock, server_sock, cfg):
 					server_sock.close()
 					break
 
-				data_out = proxify(data_out, cfg, client_peer, server_peer, to_server=True)
+				data_out = proxify(data_out, cfg, client_peer, server_peer, client_sock, to_server=True)
 				server_sock.send(data_out)
 
 			if server_sock in receiving:
@@ -306,34 +306,34 @@ def do_relay_tcp(client_sock, server_sock, cfg):
 					server_sock.close()
 					break
 
-				data_in = proxify(data_in, cfg, client_peer, server_peer, to_server=False)
+				data_in = proxify(data_in, cfg, client_peer, server_peer, client_sock, to_server=False)
 				client_sock.send(data_in)
 
 		except socket.error as e:
 			print(color("[!] %s" % str(e), 1, 31))
 
-def do_relay_udp(relay_sock, server, cfg):
+# def do_relay_udp(relay_sock, server, cfg):
 
-	client = None
+# 	client = None
 
-	while True:
+# 	while True:
 
-		receiving, _, _ = select([relay_sock], [], [])
+# 		receiving, _, _ = select([relay_sock], [], [])
 
-		if relay_sock in receiving:
+# 		if relay_sock in receiving:
 
-			data, addr = relay_sock.recvfrom(BUFSIZE)
+# 			data, addr = relay_sock.recvfrom(BUFSIZE)
 
-			if addr == server:
-				data = proxify(data, cfg, client, server, to_server=False)
-				relay_sock.sendto(data, client)
+# 			if addr == server:
+# 				data = proxify(data, cfg, client, server, to_server=False)
+# 				relay_sock.sendto(data, client)
 
-			else:
-				client = addr
-				data = proxify(data, cfg, client, server, to_server=True)
-				relay_sock.sendto(data, server)
+# 			else:
+# 				client = addr
+# 				data = proxify(data, cfg, client, server, to_server=True)
+# 				relay_sock.sendto(data, server)
 
-def proxify(message, cfg, client_peer, server_peer, to_server=True):
+def proxify(message, cfg, client_peer, server_peer, client_sock, to_server=True):
 
 	# def get_response():
 	# 	try:
@@ -363,10 +363,10 @@ def proxify(message, cfg, client_peer, server_peer, to_server=True):
 		new_message = message
 
 		if to_server and hasattr(cfg.script_module, 'handle_request'):
-			new_message = cfg.script_module.handle_request(message)
+			new_message = cfg.script_module.handle_request(message, socket.AF_INET)
 
 		if not to_server and hasattr(cfg.script_module, 'handle_response'):
-			new_message = cfg.script_module.handle_response(message)
+			new_message = cfg.script_module.handle_response(message, socket.AF_INET)
 
 		if new_message == None:
 			print(color("[!] Error: make sure handle_request and handle_response both return a message.", 1, 31))
@@ -405,29 +405,22 @@ def handle_tcp_client(client_sock, target, cfg):
 def create_server(relay, cfg):
 	proto, lport, rhost, rport = relay
 
-	if proto == 'tcp':
-		serv = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		serv.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-		serv.bind((cfg.listen, lport))
-		serv.listen(2)
 
-		print('[+] Relay listening on %s %d -> %s:%d' % relay)
+	serv = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	serv.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+	serv.bind((cfg.listen, lport))
+	serv.listen(2)
 
-		while True:
-			if proto == 'tcp':
-				client, addr = serv.accept()
-				dest_str = '%s:%d' % (relay[2], relay[3])
+	print('[+] Relay listening on %s %d -> %s:%d' % relay)
 
-				print(color('[+] New client %s:%d will be relayed to %s' % (addr[0], addr[1], dest_str), 1, 39))
-				thread = Thread(target=handle_tcp_client, args=(client, (rhost, rport), cfg))
-				thread.start()
-	else:
-		serv = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-		serv.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-		serv.bind((cfg.listen, lport))
+	while True:
+		if proto == 'tcp':
+			client, addr = serv.accept()
+			dest_str = '%s:%d' % (relay[2], relay[3])
 
-		thread = Thread(target=do_relay_udp, args=(serv, (rhost, rport), cfg))
-		thread.start()
+			print(color('[+] New client %s:%d will be relayed to %s' % (addr[0], addr[1], dest_str), 1, 39))
+			thread = Thread(target=handle_tcp_client, args=(client, (rhost, rport), cfg))
+			thread.start()
 
 if __name__=='__main__':
 	main()
