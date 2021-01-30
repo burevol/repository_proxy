@@ -3,7 +3,7 @@ import re
 import jenkins
 
 need_start_job = False
-current_client_addr = ();
+current_client_addr = ()
 repo_name = ""
 
 re_alias = re.compile(b'alias=\"(.*?)\"')
