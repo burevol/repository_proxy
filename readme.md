@@ -54,6 +54,8 @@ docker-compose up -d
 -------------
 Задача Jenkins получает имя хранилища в параметре extension_name
 
+В разработке использована модифицированная версия [mitm_relay](https://github.com/jrmdev/mitm_relay)
+
 
 
 
